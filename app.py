@@ -29,7 +29,9 @@ def get_clean_timeseries_data():
         # statewise = jsonData["statewise"]
         # print(json.dumps(cases_time_series, indent=2))
     # df_cases_time_series = pd.DataFrame(data=cases_time_series)
-    df_cases_time_series = pd.read_csv('./IndiaData/case_time_series.csv')
+    df_cases_time_series = pd.read_csv(
+        'https://api.covid19india.org/csv/latest/case_time_series.csv')
+    # df_cases_time_series = pd.read_csv('./IndiaData/case_time_series.csv')
     df_cases_time_series["Date"] = df_cases_time_series["Date"] + " 2020"
     df_cases_time_series["Date"] = df_cases_time_series["Date"].apply(
         lambda x: datetime.strptime(x, "%d %B %Y"))
@@ -48,7 +50,9 @@ def get_clean_timeseries_data():
 
 
 def get_clean_statewise_data():
-    df_statewise = pd.read_csv('./IndiaData/state_wise.csv')
+    df_statewise = pd.read_csv(
+        'https://api.covid19india.org/csv/latest/state_wise.csv')
+    # df_statewise = pd.read_csv('./IndiaData/state_wise.csv')
     df_statewise = df_statewise.drop(
         ["Last_Updated_Time", "Delta_Confirmed", "Delta_Deaths", "Delta_Recovered"], axis=1)
     # cols = df_statewise.columns
@@ -61,7 +65,9 @@ def get_clean_statewise_data():
 
 
 def get_clean_statewise_daily_data():
-    df_statewise_daily = pd.read_csv('./IndiaData/state_wise_daily.csv')
+    df_statewise_daily = pd.read_csv(
+        'https://api.covid19india.org/csv/latest/state_wise_daily.csv')
+    # df_statewise_daily = pd.read_csv('./IndiaData/state_wise_daily.csv')
     df_statewise_daily = df_statewise_daily.drop(["TT"], axis=1)
     df_statewise_daily["Date"] = df_statewise_daily["Date"]+"20"
     df_statewise_daily["Date"] = pd.to_datetime(df_statewise_daily["Date"])
@@ -74,6 +80,7 @@ df_statewise_daily = get_clean_statewise_daily_data()
 # print(len(df_cases_time_series))
 
 app = dash.Dash(__name__)
+server = app.server
 
 app.index_string = '''
 <!DOCTYPE html>
