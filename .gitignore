@@ -5,3 +5,6 @@ venv
 NERD_tree*
 BufExplorer
 [BufExplorer]
+static
+.flaskenv
+.env
