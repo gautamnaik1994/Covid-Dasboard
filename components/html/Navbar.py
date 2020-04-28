@@ -8,7 +8,7 @@ def Navbar(title):
             title -- string to display in Navbar
     """
     return html.Nav(
-        className="navbar navbar-dark bg-dark",
+        className="navbar ",
         children=[
             html.A(children=[title], className="navbar-brand")
         ]

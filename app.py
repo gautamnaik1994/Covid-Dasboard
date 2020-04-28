@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 from flask_assets import Bundle, Environment
 
 from components.html.Navbar import Navbar
-from components.html.Statbox import Statbox
+from components.html.Statbox import Statbox, StatboxBig
 from components.plots.Barchart import draw_bar_chart
 from components.plots.DailyCovidLineChart import draw_line_chart
 from components.plots.Heatmap import draw_heatmap
@@ -104,6 +104,7 @@ df_statewise_daily = get_clean_statewise_daily_data()
 # print(len(df_cases_time_series))
 
 total_confirmed = df_cases_time_series["Total Confirmed"][-1]
+today_confirmed = df_cases_time_series["Daily Confirmed"][-1]
 total_recovered = df_cases_time_series["Total Recovered"][-1]
 total_deceased = df_cases_time_series["Total Deceased"][-1]
 
@@ -141,17 +142,27 @@ cumilative_data_figure = draw_line_chart(data=df_cases_time_series,
 app.layout = html.Div([
     Navbar("Covid Dashboard"),
     html.Main(
-        children=html.Div(className="container-fluid", children=[
-            html.Div(className="row", children=[
+        children=html.Div(className="container", children=[
+            html.Div(className="row one-rem-mt one-rem-mb", children=[
+
                 html.Div(children=[
-                    Statbox(name="Total Confirmed", value=total_confirmed),
-                ], className="col text-center"),
+                    StatboxBig(name="Total Confirmed",
+                               value=total_confirmed,
+                               other_info={
+                                   'New Cases': f'+{today_confirmed}', 'World Rank': 10},
+                               secondary_name="New Cases",
+                               secondary_value=f'+{today_confirmed}',
+                               data=[df_cases_time_series[45:].index,
+                                     df_cases_time_series["Daily Confirmed"][45:]],
+                               color='confirmed',
+                               ),
+                ], className="col-12 col-lg-6"),
                 html.Div(children=[
+                    Statbox(name="Total Active",
+                            value=total_confirmed-total_recovered-total_deceased),
                     Statbox(name="Total Recovered", value=total_recovered),
-                ], className="col text-center"),
-                html.Div(children=[
                     Statbox(name="Total Deceased", value=total_deceased),
-                ], className="col text-center"),
+                ], className="col-12 col-lg-6 "),
             ]),
             html.Div(className="card", children=[
 
@@ -225,7 +236,6 @@ app.layout = html.Div([
     )
 ])
 
-
 app.clientside_callback(
     """
     function(data, value) {
@@ -264,15 +274,15 @@ app.clientside_callback(
      Input('cumilative-range-slider', 'value')],
 )
 
-if DEBUG == True:
-    assets = Environment(server)
-    assets.config['AUTOPREFIXER_BROWSERS'] = [
-        '> 0.5%', 'last 3 versions', 'firefox 24', 'opera 12.1']
-    scss = Bundle('scss/app.scss', filters='libsass', depends='**/*.scss')
-    css = Bundle(scss, filters='autoprefixer6', output='../assets/style.css')
+# if DEBUG == True:
+# assets = Environment(server)
+# assets.config['AUTOPREFIXER_BROWSERS'] = [
+# '> 0.5%', 'last 3 versions', 'firefox 24', 'opera 12.1']
+# scss = Bundle('scss/app.scss', filters='libsass', depends='**/*.scss')
+# css = Bundle(scss, filters='autoprefixer6', output='../assets/style.css')
 # css = Bundle(mid, filters='rcssmin', output='assets/style.css')
-    assets.register('css', css)
-    print(assets['css'].urls())
+# assets.register('css', css)
+# print(assets['css'].urls())
 
 if __name__ == '__main__':
     app.run_server(debug=True)

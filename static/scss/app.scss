@@ -1,0 +1,70 @@
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  lg: 992px,
+);
+
+$active_color: #ff9800;
+$confirmed_color: #3f51b5;
+$death_color: #f44336;
+$recovered_color: #4caf50;
+
+@import "bootstrap/bootstrap.scss";
+@import "./helpers";
+
+.text-confirmed {
+  color: $confirmed_color;
+}
+
+.navbar {
+  background-color: white;
+  box-shadow: 0px 2px 8px 2px rgba(0, 0, 0, 0.22);
+  .navbar-brand {
+    color: #333;
+  }
+}
+
+.rc-slider-handle {
+  width: 25px;
+  height: 25px;
+  margin-top: -11px;
+}
+
+.statbox {
+  padding: 15px;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 3px 4px 1px rgba(0, 0, 0, 0.25);
+
+  .name {
+  }
+  .value {
+  }
+  &.big {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    .name {
+      font-size: 20px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    .value {
+      font-size: 40px;
+      line-height: 40px;
+    }
+  }
+  .secondary {
+    font-size: 18px;
+  }
+  .sparkline {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    z-index: -1;
+  }
+}
