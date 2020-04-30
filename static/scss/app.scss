@@ -15,6 +15,30 @@ $recovered_color: #4caf50;
 .text-confirmed {
   color: $confirmed_color;
 }
+.text-active {
+  color: darken($active_color, 0.2);
+}
+.text-recovered {
+  color: $recovered_color;
+}
+.text-death,
+.text-deceased {
+  color: $death_color;
+}
+
+.bg-confirmed {
+  background: $confirmed_color;
+}
+.bg-active {
+  background: darken($active_color, 0.2);
+}
+.bg-recovered {
+  background: $recovered_color;
+}
+.bg-death,
+.bg-deceased {
+  background: $death_color;
+}
 
 .navbar {
   background-color: white;
@@ -31,21 +55,38 @@ $recovered_color: #4caf50;
 }
 
 .statbox {
-  padding: 15px;
+  padding: 10px;
   border-radius: 5px;
   overflow: hidden;
-  box-shadow: 0 3px 4px 1px rgba(0, 0, 0, 0.25);
-
+  box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.18);
+  position: relative;
   .name {
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
   }
   .value {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .percentage {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    //background-color: #f44236;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    color: white;
+    width: 100px;
   }
   &.big {
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    position: relative;
     .name {
       font-size: 20px;
       text-transform: uppercase;
@@ -53,6 +94,7 @@ $recovered_color: #4caf50;
     }
     .value {
       font-size: 40px;
+      font-weight: normal;
       line-height: 40px;
     }
   }

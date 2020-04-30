@@ -17,7 +17,7 @@ from components.plots.Barchart import draw_bar_chart
 from components.plots.DailyCovidLineChart import draw_line_chart
 from components.plots.Heatmap import draw_heatmap
 from components.plots.Piechart import draw_pie_chart
-from helpers.apputils import convert_dateformat, date_to_utc
+from helpers.apputils import convert_dateformat, date_to_utc, comma_number
 
 try:
     load_dotenv('.env')
@@ -104,9 +104,11 @@ df_statewise_daily = get_clean_statewise_daily_data()
 # print(len(df_cases_time_series))
 
 total_confirmed = df_cases_time_series["Total Confirmed"][-1]
-today_confirmed = df_cases_time_series["Daily Confirmed"][-1]
 total_recovered = df_cases_time_series["Total Recovered"][-1]
 total_deceased = df_cases_time_series["Total Deceased"][-1]
+today_confirmed = df_cases_time_series["Daily Confirmed"][-1]
+today_recovered = df_cases_time_series["Daily Recovered"][-1]
+today_deaceased = df_cases_time_series["Daily Deceased"][-1]
 
 app = dash.Dash(__name__)
 server = app.server
@@ -143,7 +145,7 @@ app.layout = html.Div([
     Navbar("Covid Dashboard"),
     html.Main(
         children=html.Div(className="container", children=[
-            html.Div(className="row one-rem-mt one-rem-mb", children=[
+            html.Div(className="row one-rem-mb", children=[
 
                 html.Div(children=[
                     StatboxBig(name="Total Confirmed",
@@ -156,14 +158,33 @@ app.layout = html.Div([
                                      df_cases_time_series["Daily Confirmed"][45:]],
                                color='confirmed',
                                ),
-                ], className="col-12 col-lg-6"),
+                ], className="col-12 col-lg-6 padding-top-15"),
                 html.Div(children=[
                     Statbox(name="Total Active",
-                            value=total_confirmed-total_recovered-total_deceased),
-                    Statbox(name="Total Recovered", value=total_recovered),
-                    Statbox(name="Total Deceased", value=total_deceased),
-                ], className="col-12 col-lg-6 "),
+                            value=total_confirmed-total_recovered-total_deceased,
+                            color="active",
+                            secondary_name="New Cases",
+                            secondary_value=today_confirmed-today_deaceased-today_recovered,
+                            confirmed=total_confirmed,
+                            className="one-rem-mb"),
+                    Statbox(name="Total Recovered",
+                            value=total_recovered,
+                            color="recovered",
+                            secondary_name="New Cases",
+                            secondary_value=today_recovered,
+                            confirmed=total_confirmed,
+                            className="one-rem-mb"),
+                    Statbox(name="Total Deceased",
+                            value=total_deceased,
+                            color="death",
+                            secondary_name="New Cases",
+                            confirmed=total_confirmed,
+                            secondary_value=today_deaceased
+                            ),
+                ], className="col-12 col-lg-6 padding-top-15"),
             ]),
+            # html.Button('\U0001F447'),
+            # html.Button('▲'),
             html.Div(className="card", children=[
 
                 dcc.Graph(id="dailyGraph", figure=daily_data_figure),
