@@ -36,8 +36,20 @@ else:
 df_cases_time_series = []
 df_statewise = []
 df_statewise_daily = []
+confirmed_world_rank = 0
 
 # df_raw = pd.read_json("https://api.covid19india.org/raw_data.json")
+
+
+def get_confirmed_world_rank():
+    if DEBUG:
+        cov_confirmed = pd.read_csv(
+            "./IndiaData/time_series_covid19_confirmed_global.csv")
+    else:
+        cov_confirmed = pd.read_csv(
+            "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
+    last_col = cov_confirmed.columns.values[-1]
+    return cov_confirmed[["Country/Region", last_col]].groupby("Country/Region").sum().sort_values(by=last_col, ascending=False).index.get_loc("India")+1
 
 
 def get_clean_timeseries_data():
@@ -101,14 +113,17 @@ def get_clean_statewise_daily_data():
 df_cases_time_series = get_clean_timeseries_data()
 df_statewise = get_clean_statewise_data()
 df_statewise_daily = get_clean_statewise_daily_data()
+confirmed_world_rank = get_confirmed_world_rank()
+
 # print(len(df_cases_time_series))
 
 total_confirmed = df_cases_time_series["Total Confirmed"][-1]
 total_recovered = df_cases_time_series["Total Recovered"][-1]
 total_deceased = df_cases_time_series["Total Deceased"][-1]
-today_confirmed = df_cases_time_series["Daily Confirmed"][-1]
-today_recovered = df_cases_time_series["Daily Recovered"][-1]
-today_deaceased = df_cases_time_series["Daily Deceased"][-1]
+today_confirmed = df_cases_time_series["Daily Confirmed"][-2:]
+today_recovered = df_cases_time_series["Daily Recovered"][-2:]
+today_deceased = df_cases_time_series["Daily Deceased"][-2:]
+
 
 app = dash.Dash(__name__)
 server = app.server
@@ -151,9 +166,9 @@ app.layout = html.Div([
                     StatboxBig(name="Total Confirmed",
                                value=total_confirmed,
                                other_info={
-                                   'New Cases': f'+{today_confirmed}', 'World Rank': 10},
+                                   'New Cases': f'{ "▲" if today_confirmed[1] > today_confirmed[0] else "▼"}{today_confirmed[1]}', 'World Rank': confirmed_world_rank},
                                secondary_name="New Cases",
-                               secondary_value=f'+{today_confirmed}',
+                               secondary_value=f'+{today_confirmed[0]}',
                                data=[df_cases_time_series[45:].index,
                                      df_cases_time_series["Daily Confirmed"][45:]],
                                color='confirmed',
@@ -161,25 +176,28 @@ app.layout = html.Div([
                 ], className="col-12 col-lg-6 padding-top-15"),
                 html.Div(children=[
                     Statbox(name="Total Active",
-                            value=total_confirmed-total_recovered-total_deceased,
+                            value=total_confirmed-total_deceased-total_recovered,
                             color="active",
                             secondary_name="New Cases",
-                            secondary_value=today_confirmed-today_deaceased-today_recovered,
+                            secondary_value=[today_confirmed[0]-today_recovered[0]-today_deceased[0],
+                                             today_confirmed[1]-today_recovered[1]-today_deceased[1]],
                             confirmed=total_confirmed,
                             className="one-rem-mb"),
                     Statbox(name="Total Recovered",
                             value=total_recovered,
                             color="recovered",
                             secondary_name="New Cases",
-                            secondary_value=today_recovered,
+                            secondary_value=[
+                                today_recovered[0], today_recovered[1]],
                             confirmed=total_confirmed,
                             className="one-rem-mb"),
                     Statbox(name="Total Deceased",
                             value=total_deceased,
                             color="death",
                             secondary_name="New Cases",
-                            confirmed=total_confirmed,
-                            secondary_value=today_deaceased
+                            secondary_value=[
+                                today_deceased[0], today_deceased[1]],
+                            confirmed=total_confirmed
                             ),
                 ], className="col-12 col-lg-6 padding-top-15"),
             ]),

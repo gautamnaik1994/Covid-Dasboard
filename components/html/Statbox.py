@@ -22,6 +22,7 @@ def Statbox(name, value, color, secondary_name, secondary_value, confirmed,
             html.Div:A div
     '''
     percentage = ((value/confirmed)*100).astype(int)
+    # print(f'{name} {secondary_value}')
     # print(f'{percentage} = {value} /{confirmed}')
     return html.Div(
         className=f'statbox {className}',
