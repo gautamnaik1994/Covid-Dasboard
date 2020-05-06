@@ -15,7 +15,7 @@ def Statbox(name, value, color, secondary_name, secondary_value, confirmed,
             color (str): color of items
             secondary_name (str): secondary text
             secondary_value (int): secondary value
-            confirmed(int) : Total Confimed
+            confirmed(list) : Total Confimed last 2 days
             className (string): classname
 
         Returns:
@@ -30,8 +30,8 @@ def Statbox(name, value, color, secondary_name, secondary_value, confirmed,
             html.Div("{:,}".format(value), className="value"),
             html.Div(
                   html.Div(className="secondary", children=[
-                      secondary_name, " : ", "▲" if secondary_value > 0 else "▼", html.Strong(
-                          comma_number(secondary_value))
+                      secondary_name, " : ", "▲" if secondary_value[1] > secondary_value[0] else "▼", html.Strong(
+                          comma_number(secondary_value[1]))
                   ])
             ),
             html.Div(f"{percentage}%", className=f'percentage bg-{color}')

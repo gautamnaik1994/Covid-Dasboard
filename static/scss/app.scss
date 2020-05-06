@@ -84,6 +84,7 @@ $recovered_color: #4caf50;
   }
   &.big {
     height: 100%;
+    min-height: 200px;
     display: flex;
     flex-direction: column;
     justify-content: center;
