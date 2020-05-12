@@ -7,6 +7,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
+import requests
 from dash.dependencies import Input, Output, State
 from dotenv import load_dotenv
 from flask_assets import Bundle, Environment
@@ -17,7 +18,8 @@ from components.plots.Barchart import draw_bar_chart
 from components.plots.DailyCovidLineChart import draw_line_chart
 from components.plots.Heatmap import draw_heatmap
 from components.plots.Piechart import draw_pie_chart
-from helpers.apputils import convert_dateformat, date_to_utc, comma_number
+from components.plots.Treemap import draw_treemap
+from helpers.apputils import comma_number, convert_dateformat, date_to_utc
 
 try:
     load_dotenv('.env')
@@ -37,9 +39,30 @@ df_cases_time_series = []
 df_statewise = []
 df_statewise_daily = []
 confirmed_world_rank = 0
+zones=[]
 
 # df_raw = pd.read_json("https://api.covid19india.org/raw_data.json")
 
+
+def get_zones_data():
+    data=[]
+    if DEBUG:
+        with open('./IndiaData/zones.json') as f:
+            data=json.load(f)
+    else:
+        data=requests.get('https://api.covid19india.org/zones.json').json()
+
+    df=pd.json_normalize(data["zones"])
+    df_1 = df.rename(columns={'district':'id','statecode':'parent','zone':'value'})
+    df_1["state"]=df["district"]
+    df_1=df_1[["id","parent","value","state"]]
+    df_2=df.groupby(["state","zone","statecode"]).count().reset_index().sort_values(["statecode","district"],ascending=False).groupby("statecode").first().reset_index()
+    df_2=df_2.rename(columns={'statecode':'id','zone':'value'})
+    df_2["parent"]="India"
+    df_2=df_2[["id","parent","value","state"]]
+    df_3=pd.DataFrame(data={'id':['India'],'parent':[""],'value':["White"],'state':["India"]})
+    alldata=df_1.append(df_2).append(df_3)
+    return alldata
 
 def get_confirmed_world_rank():
     if DEBUG:
@@ -114,6 +137,7 @@ df_cases_time_series = get_clean_timeseries_data()
 df_statewise = get_clean_statewise_data()
 df_statewise_daily = get_clean_statewise_daily_data()
 confirmed_world_rank = get_confirmed_world_rank()
+zones=get_zones_data()
 
 # print(len(df_cases_time_series))
 
@@ -270,6 +294,7 @@ app.layout = html.Div([
                 data=df_statewise_daily, data_type="Recovered")),
             dcc.Graph(figure=draw_heatmap(
                 data=df_statewise_daily, data_type="Deceased")),
+            dcc.Graph(figure=draw_treemap( data=zones)),
 
         ])
     )
