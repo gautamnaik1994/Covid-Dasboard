@@ -61,8 +61,7 @@ def get_zones_data():
     df_2["parent"]="India"
     df_2=df_2[["id","parent","value","state"]]
     df_3=pd.DataFrame(data={'id':['India'],'parent':[""],'value':["White"],'state':["India"]})
-    alldata=df_1.append(df_2).append(df_3)
-    return alldata
+    return df_1.append(df_2).append(df_3)
 
 def get_confirmed_world_rank():
     if DEBUG:
