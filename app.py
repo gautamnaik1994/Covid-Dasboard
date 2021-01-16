@@ -87,9 +87,9 @@ def get_clean_timeseries_data():
     else:
         df_cases_time_series = pd.read_csv(
             'https://api.covid19india.org/csv/latest/case_time_series.csv')
-    df_cases_time_series["Date"] = df_cases_time_series["Date"] + " 2020"
-    df_cases_time_series["Date"] = df_cases_time_series["Date"].apply(
-        lambda x: datetime.strptime(x, "%d %B %Y"))
+    # df_cases_time_series["Date"] = df_cases_time_series["Date"] + " 2020"
+    df_cases_time_series["Date"] = df_cases_time_series["Date_YMD"].apply(
+        lambda x: datetime.strptime(x, "%Y-%m-%d"))
     df_cases_time_series = df_cases_time_series.set_index("Date")
     cols = df_cases_time_series.columns
     # print(cols)
@@ -128,8 +128,8 @@ def get_clean_statewise_daily_data():
         df_statewise_daily = pd.read_csv(
             'https://api.covid19india.org/csv/latest/state_wise_daily.csv')
     df_statewise_daily = df_statewise_daily.drop(["TT"], axis=1)
-    df_statewise_daily["Date"] = df_statewise_daily["Date"]+"20"
-    df_statewise_daily["Date"] = pd.to_datetime(df_statewise_daily["Date"])
+    # df_statewise_daily["Date"] = df_statewise_daily["Date"]+"20"
+    df_statewise_daily["Date"] = pd.to_datetime(df_statewise_daily["Date_YMD"])
     return df_statewise_daily
 
 
